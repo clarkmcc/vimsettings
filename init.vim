@@ -14,14 +14,15 @@ Plug 'tpope/vim-rhubarb'           " Depenency for tpope/fugitive
 
 " General plugins
 Plug 'Shougo/denite.nvim'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'Shougo/neosnippet'
 Plug 'Shougo/neosnippet-snippets'  " Default snippets for many languages
 Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'ctrlpvim/ctrlp.vim'          " CtrlP is installed to support tag finding in vim-go
 Plug 'editorconfig/editorconfig-vim'
-Plug 'itchyny/calendar.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'junegunn/goyo.vim'
@@ -39,6 +40,11 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'vimwiki/vimwiki'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+Plug 'equalsraf/neovim-gui-shim'
+
+" Autocompletion
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
 
 " Vim only plugins
 if !has('nvim')
@@ -54,14 +60,14 @@ Plug 'chr4/nginx.vim'                          " nginx syntax highlighting
 Plug 'dag/vim-fish'                            " Fish syntax highlighting
 Plug 'digitaltoad/vim-pug'                     " Pug syntax highlighting
 Plug 'fatih/vim-go'                            " Go support
-Plug 'fishbullet/deoplete-ruby'                " Ruby auto completion
+" Plug 'fishbullet/deoplete-ruby'                " Ruby auto completion
 Plug 'hashivim/vim-terraform'                  " Terraform syntax highlighting
 Plug 'kchmck/vim-coffee-script'                " CoffeeScript syntax highlighting
 Plug 'kylef/apiblueprint.vim'                  " API Blueprint syntax highlighting
 Plug 'leafgarland/typescript-vim'              " TypeScript syntax highlighting
 Plug 'lifepillar/pgsql.vim'                    " PostgreSQL syntax highlighting
 Plug 'mhartington/nvim-typescript', {'do': './install.sh'} " TypeScript auto completion
-Plug 'Shougo/deoplete.nvim'
+" Plug 'Shougo/deoplete.nvim'
 Plug 'Shougo/denite.nvim'
 Plug 'mxw/vim-jsx'                             " JSX syntax highlighting
 "Plug 'mdempsky/gocode', { 'rtp': 'nvim', 'do': '~/.vim/plugged/gocode/nvim/symlink.sh' }
@@ -69,7 +75,7 @@ Plug 'pangloss/vim-javascript'                 " JavaScript syntax highlighting
 Plug 'plasticboy/vim-markdown'                 " Markdown syntax highlighting
 Plug 'rodjek/vim-puppet'                       " Puppet syntax highlighting
 Plug 'tclh123/vim-thrift'                      " Thrift syntax highlighting
-Plug 'zchee/deoplete-go', { 'do': 'make'}      " Go auto completion
+" Plug 'zchee/deoplete-go', { 'do': 'make'}      " Go auto completion
 "Plug 'zchee/deoplete-jedi'                     " Go auto completion
 Plug 'zimbatm/haproxy.vim'                     " HAProxy syntax highlighting
 
@@ -80,6 +86,8 @@ Plug 'ayu-theme/ayu-vim'
 Plug 'kaicataldo/material.vim'
 Plug 'rakr/vim-one'
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'cormacrelf/vim-colors-github'
+Plug 'morhetz/gruvbox'
 
 call plug#end()
 
@@ -115,6 +123,17 @@ set updatetime=100                " redraw the status bar often
 
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 cmap w!! w !sudo tee > /dev/null %
+
+" Map the normal keys for saving, copying, and pasting
+:behave mswin
+:set clipboard=unnamedplus
+:smap <Del> <C-g>"_d
+:smap <C-c> <C-g>y
+:smap <C-x> <C-g>x
+:imap <C-v> <Esc>pi
+:smap <C-v> <C-g>p
+:smap <Tab> <C-g>1>
+:smap <S-Tab> <C-g>1<
 
 " neovim specific settings
 if has('nvim')
@@ -172,7 +191,9 @@ let ayucolor = 'dark'
 " One colorscheme settings
 let g:one_allow_italics = 1
 
-colorscheme one
+colorscheme gruvbox
+
+set guifont=Fira\ Code\ Retina
 
 " Override the search highlight color with a combination that is easier to
 " read. The default PaperColor is dark green backgroun with black foreground.
@@ -289,10 +310,10 @@ autocmd BufEnter NERD_tree_* :call BookmarkUnmapKeys()
 "----------------------------------------------
 " Plugin: Shougo/deoplete.nvim
 "----------------------------------------------
-if has('nvim')
+"if has('nvim')
     " Enable deoplete on startup
-    let g:deoplete#enable_at_startup = 1
-endif
+"    let g:deoplete#enable_at_startup = 1
+"endif
 
 " Disable deoplete when in multi cursor mode
 "function! Multiple_cursors_before()
@@ -303,13 +324,13 @@ endif
     "let b:deoplete_disable_auto_complete = 0
 "endfunction
 
-let g:deoplete#sources#go#gocode_binary = $HOME.'/go/bin/gocode'
-let g:deoplete#sources#go#source_importer = 1
+"let g:deoplete#sources#go#gocode_binary = $HOME.'/go/bin/gocode'
+"let g:deoplete#sources#go#source_importer = 1
 
-call deoplete#custom#option({
-\ 'auto_complete_delay': 0,
-\ 'auto_refresh_delay': 10,
-\})
+"call deoplete#custom#option({
+"\ 'auto_complete_delay': 0,
+"\ 'auto_refresh_delay': 10,
+"\})
 
 "----------------------------------------------
 " Plugin: bling/vim-airline
@@ -325,7 +346,7 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#show_tabs = 0
 
 " Enable powerline fonts.
-let g:airline_powerline_fonts = 0
+let g:airline_powerline_fonts = 1
 
 " Explicitly define some symbols that did not work well for me in Linux.
 if !exists('g:airline_symbols')
@@ -333,6 +354,9 @@ if !exists('g:airline_symbols')
 endif
 let g:airline_symbols.branch = ''
 let g:airline_symbols.maxlinenr = ''
+
+" Use the github theme to match the ide
+let g:airline_theme = "gruvbox"
 
 "----------------------------------------------
 " Plugin: christoomey/vim-tmux-navigator
@@ -534,10 +558,78 @@ let g:multi_cursor_skip_key='<C-b>'
 " Plugin: zchee/deoplete-go
 "----------------------------------------------
 " Enable completing of go pointers
-let g:deoplete#sources#go#pointer = 1
+" let g:deoplete#sources#go#pointer = 1
 
 " Enable autocomplete of unimported packages
-let g:deoplete#sources#go#unimported_packages = 0
+" let g:deoplete#sources#go#unimported_packages = 0
+
+"----------------------------------------------
+" Plugin neoclide/coc.nvim
+"----------------------------------------------
+" if hidden is not set, TextEdit might fail.
+set hidden
+
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
+
+" Better display for messages
+set cmdheight=2
+
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+set signcolumn=yes
+
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Or use `complete_info` if your vim support it, like:
+" inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
 
 "----------------------------------------------
 " Language: Golang
